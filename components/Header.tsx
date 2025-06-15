@@ -4,12 +4,20 @@ import Container from "./Container";
 import { User, MessageCircle, Heart, ShoppingCart, Menu, X } from "lucide-react";
 import Logo from "./Logo";
 import SearchBar from "./SearchBar";
+import SearchBar2 from "./SearchBar2";
 
-const Header = () => {
+const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  // Close menu when clicking on navigation items
+  const handleNavItemClick = () => {
+    if (isMenuOpen) {
+      setIsMenuOpen(false);
+    }
   };
 
   return (
@@ -19,58 +27,79 @@ const Header = () => {
         <Logo />
         {/* SearchBar with classes preserved and wider width */}
         <div className="hidden md:block w-full max-w-lg mx-6">
-          <SearchBar />
+          <SearchBar onSearch={(query) => console.log('Search:', query)} />
         </div>
         <div className="hidden md:flex items-center space-x-4 md:space-x-6">
-          <button className="flex flex-col items-center text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer">
-            <User className="w-6 h-6" fill="currentColor" />
+          <button 
+            className="flex flex-col items-center text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer"
+            aria-label="Profile"
+          >
+            <User className="w-6 h-6" />
             <span className="text-xs mt-1">Profile</span>
           </button>
-          <button className="flex flex-col items-center text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer">
-            <MessageCircle className="w-6 h-6" fill="currentColor" />
+          <button 
+            className="flex flex-col items-center text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer"
+            aria-label="Messages"
+          >
+            <MessageCircle className="w-6 h-6" />
             <span className="text-xs mt-1">Message</span>
           </button>
-          <button className="flex flex-col items-center text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer">
-            <Heart className="w-6 h-6" fill="currentColor" />
+          <button 
+            className="flex flex-col items-center text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer"
+            aria-label="Orders"
+          >
+            <Heart className="w-6 h-6" />
             <span className="text-xs mt-1">Orders</span>
           </button>
-          <button className="flex flex-col items-center text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer">
-            <ShoppingCart className="w-6 h-6" fill="currentColor" />
+          <button 
+            className="flex flex-col items-center text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer"
+            aria-label="Shopping cart"
+          >
+            <ShoppingCart className="w-6 h-6" />
             <span className="text-xs mt-1">My cart</span>
           </button>
         </div>
         {/* Hamburger Menu Button for Tablet/Mobile */}
         <button
-          className="md:hidden text-[var(--sub-text)] hover:text-[var(--main)] transition-colors"
+          className="md:hidden text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer"
           onClick={toggleMenu}
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={isMenuOpen}
+          aria-controls="mobile-menu"
         >
           {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </Container>
 
-      {/* Mobile/Tablet Menu, unchanged */}
+      {/* Mobile/Tablet Menu */}
       <div
+        id="mobile-menu"
         className={`fixed inset-0 z-50 md:hidden transition-opacity duration-300 ease-in-out ${
           isMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
       >
         {/* Backdrop */}
         <div
-          className="absolute inset-0 bg-black bg-opacity-50"
+          className="absolute inset-0 bg-black opacity-50 backdrop-blur-lg blur-lg"
           onClick={toggleMenu}
+          aria-hidden="true"
         ></div>
         {/* Menu Content */}
         <div
           className={`absolute top-0 right-0 w-80 max-w-[80vw] h-full bg-white shadow-xl transition-transform duration-300 ease-in-out ${
             isMenuOpen ? "translate-x-0" : "translate-x-full"
           }`}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Mobile menu"
         >
           <div className="flex flex-col h-full">
             {/* Close Button */}
             <div className="flex justify-end p-4 border-b border-gray-200">
               <button
-                className="text-[var(--sub-text)] hover:text-[var(--main)] transition-colors"
+                className="text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer"
                 onClick={toggleMenu}
+                aria-label="Close menu"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -78,23 +107,38 @@ const Header = () => {
             {/* Menu Content */}
             <div className="flex-1 p-4 overflow-y-auto">
               <div className="mb-6">
-                <SearchBar />
+                <SearchBar2 onSearch={(query) => {
+                  console.log('Mobile search:', query);
+                  handleNavItemClick();
+                }} />
               </div>
               <nav className="flex flex-col space-y-4">
-                <button className="flex items-center space-x-3 text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer text-base font-medium">
-                  <User className="w-5 h-5" fill="currentColor" />
+                <button 
+                  onClick={handleNavItemClick}
+                  className="flex items-center space-x-3 text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer text-base font-medium"
+                >
+                  <User className="w-5 h-5" />
                   <span>Profile</span>
                 </button>
-                <button className="flex items-center space-x-3 text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer text-base font-medium">
-                  <MessageCircle className="w-5 h-5" fill="currentColor" />
+                <button 
+                  onClick={handleNavItemClick}
+                  className="flex items-center space-x-3 text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer text-base font-medium"
+                >
+                  <MessageCircle className="w-5 h-5" />
                   <span>Message</span>
                 </button>
-                <button className="flex items-center space-x-3 text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer text-base font-medium">
-                  <Heart className="w-5 h-5" fill="currentColor" />
+                <button 
+                  onClick={handleNavItemClick}
+                  className="flex items-center space-x-3 text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer text-base font-medium"
+                >
+                  <Heart className="w-5 h-5" />
                   <span>Orders</span>
                 </button>
-                <button className="flex items-center space-x-3 text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer text-base font-medium">
-                  <ShoppingCart className="w-5 h-5" fill="currentColor" />
+                <button 
+                  onClick={handleNavItemClick}
+                  className="flex items-center space-x-3 text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer text-base font-medium"
+                >
+                  <ShoppingCart className="w-5 h-5" />
                   <span>My cart</span>
                 </button>
               </nav>

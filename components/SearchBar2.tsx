@@ -58,7 +58,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ className = "", onSearch }) => {
             Search
           </h1>
         </button> 
-        <select
+        {/* <select
           name="category"
           id="category"
           className="absolute inset-y-0 right-20 pr-3 border-l-2 border-[var(--main)] flex items-center text-[var(--text)] focus:outline-none sm:text-sm transition-colors cursor-pointer"
@@ -66,7 +66,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ className = "", onSearch }) => {
           <option value="all">All</option>
           <option value="products">Products</option>
           <option value="categories">Categories</option>
-        </select>
+        </select> */}
       </div>
     </form>
   );
