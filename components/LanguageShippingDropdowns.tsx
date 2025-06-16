@@ -41,6 +41,7 @@ const defaultShippingOptions = [
 export default function LanguageShippingDropdowns({
   languageOptions = defaultLanguageOptions,
   shippingOptions = defaultShippingOptions,
+  colors = { primary: "var(--main)", text: "var(--text)", hover: "var(--main-bg)" },
 }: Props) {
   const [language, setLanguage] = useState<LanguageOption>(languageOptions[0]);
   const [country, setCountry] = useState(shippingOptions[0].label);
@@ -71,105 +72,125 @@ export default function LanguageShippingDropdowns({
     shippingOptions.find((opt) => opt.label === country)?.flagSrc || "";
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-col sm:flex-row items-start sm:items-center w-full px-4 sm:px-6 gap-4 sm:gap-6">
       {/* Language Selector */}
-      <div className="relative" ref={langRef}>
-        <button
+      <div className="relative w-full sm:w-auto" ref={langRef}>
+        <div
           onClick={() => {
             setIsLangOpen(!isLangOpen);
             setIsCountryOpen(false);
           }}
-          className={`flex items-center gap-2 px-4 py-2 text-sm text-[var(--text)] hover:text-[var(--main)] transition-colors cursor-pointer`}
+          className={`flex items-center justify-between w-full sm:w-auto gap-2 py-3 sm:py-2 text-sm text-[${colors.text}] hover:text-[${colors.primary}] transition-colors cursor-pointer rounded-md sm:rounded-none`}
+          aria-expanded={isLangOpen}
+          aria-haspopup="listbox"
+          aria-label="Select language"
         >
           <div className="flex items-center gap-2">
-            <div className="w-5">
+            <div className="w-5 flex-shrink-0">
               <Image
                 src={language.flagSrc}
-                alt={language.label}
+                alt=""
                 width={20}
                 height={14}
                 className="w-full h-auto object-cover"
+                aria-hidden="true"
               />
             </div>
-            {language.label}
+            <span className="truncate">{language.label}</span>
           </div>
-          <ChevronDown className="w-4 h-4" />
-        </button>
+          <ChevronDown className={`w-4 h-4 flex-shrink-0 transition-transform ${isLangOpen ? "rotate-180" : ""}`} />
+        </div>
 
         {isLangOpen && (
-          <div className="absolute z-10 w-48 mt-1 bg-white border rounded-md shadow-lg">
-            {languageOptions.map((option) => (
-              <div
-                key={option.label}
-                onClick={() => {
-                  setLanguage(option);
-                  setIsLangOpen(false);
-                }}
-                className={`px-4 py-2 cursor-pointer text-sm text-[var(--text)] hover:text-[var(--main)] transition-colors`}
-              >
-                <div className="flex items-center gap-2">
-                  <div className="w-5">
+          <div className="absolute z-50 w-full sm:w-48 mt-1 bg-white border border-[var(--sub-text)] rounded-md shadow-lg">
+            <div role="listbox" aria-label="Language options" className="max-h-60 overflow-y-auto">
+              {languageOptions.map((option) => (
+                <div
+                  key={option.label}
+                  role="option"
+                  aria-selected={language.label === option.label}
+                  onClick={() => {
+                    setLanguage(option);
+                    setIsLangOpen(false);
+                  }}
+                  className={`px-4 py-3 sm:py-2 cursor-pointer text-sm text-[${colors.text}] hover:bg-[${colors.hover}] hover:text-[${colors.primary}] transition-colors flex items-center gap-2`}
+                >
+                  <div className="w-5 flex-shrink-0">
                     <Image
                       src={option.flagSrc}
-                      alt={option.label}
+                      alt=""
                       width={20}
                       height={14}
                       className="w-full h-auto object-cover"
+                      aria-hidden="true"
                     />
                   </div>
-                  {option.label}
+                  <span className="truncate">{option.label}</span>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
       </div>
 
       {/* Country Selector */}
-      <div className="relative" ref={countryRef}>
-        <button
+      <div className="relative w-full sm:w-auto" ref={countryRef}>
+        <div
           onClick={() => {
             setIsCountryOpen(!isCountryOpen);
             setIsLangOpen(false);
           }}
-          className={`flex items-center gap-2 px-4 py-2 text-sm text-[var(--text)] hover:text-[var(--main)] transition-colors cursor-pointer`}
+          className={`flex items-center justify-between w-full sm:w-auto gap-2 py-3 sm:py-2 text-sm text-[${colors.text}] hover:text-[${colors.primary}] transition-colors cursor-pointer rounded-md sm:rounded-none`}
+          aria-expanded={isCountryOpen}
+          aria-haspopup="listbox"
+          aria-label="Select shipping country"
         >
-          Ship to {country}
-          <div className="w-5">
-            <Image
-              src={selectedFlag}
-              alt={country}
-              width={20}
-              height={14}
-              className="w-full h-auto object-cover"
-            />
+          <div className="flex items-center gap-2">
+            <span className="hidden sm:inline">Ship to</span>
+            <span className="sm:hidden">Country:</span>
+            <span className="font-medium">{country}</span>
+            <div className="w-5 flex-shrink-0">
+              <Image
+                src={selectedFlag}
+                alt=""
+                width={20}
+                height={14}
+                className="w-full h-auto object-cover"
+                aria-hidden="true"
+              />
+            </div>
           </div>
-          <ChevronDown className="w-4 h-4" />
-        </button>
+          <ChevronDown className={`w-4 h-4 flex-shrink-0 transition-transform ${isCountryOpen ? "rotate-180" : ""}`} />
+        </div>
 
         {isCountryOpen && (
-          <div className="absolute z-10 w-48 mt-1 bg-white border rounded-md shadow-lg">
-            {shippingOptions.map((option) => (
-              <div
-                key={option.label}
-                onClick={() => {
-                  setCountry(option.label);
-                  setIsCountryOpen(false);
-                }}
-                className="flex items-center gap-2 px-4 py-2 cursor-pointer text-sm text-[var(--text)] hover:text-[var(--main)] transition-colors"
-              >
-                <div className="w-5">
-                  <Image
-                    src={option.flagSrc}
-                    alt={option.label}
-                    width={20}
-                    height={14}
-                    className="w-full h-auto object-cover"
-                  />
+          <div className="absolute z-50 w-full sm:w-48 mt-1 bg-white border border-[var(--sub-text)] rounded-md shadow-lg">
+            <div role="listbox" aria-label="Country options" className="max-h-60 overflow-y-auto">
+              {shippingOptions.map((option) => (
+                <div
+                  key={option.label}
+                  role="option"
+                  aria-selected={country === option.label}
+                  onClick={() => {
+                    setCountry(option.label);
+                    setIsCountryOpen(false);
+                  }}
+                  className={`px-4 py-3 sm:py-2 cursor-pointer text-sm text-[${colors.text}] hover:bg-[${colors.hover}] hover:text-[${colors.primary}] transition-colors flex items-center gap-2`}
+                >
+                  <div className="w-5 flex-shrink-0">
+                    <Image
+                      src={option.flagSrc}
+                      alt=""
+                      width={20}
+                      height={14}
+                      className="w-full h-auto object-cover"
+                      aria-hidden="true"
+                    />
+                  </div>
+                  <span className="truncate">{option.label}</span>
                 </div>
-                {option.label}
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
       </div>
