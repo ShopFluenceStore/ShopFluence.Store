@@ -1,10 +1,14 @@
 "use client";
 import React, { useState } from "react";
 import Container from "./Container";
-import { User, MessageCircle, Heart, ShoppingCart, Menu, X } from "lucide-react";
+import { MessageCircle, GripVertical, X, } from "lucide-react";
 import Logo from "./Logo";
 import SearchBar from "./SearchBar";
 import SearchBar2 from "./SearchBar2";
+import HeaderMenu from "./HeaderMenu";
+import Carticon from "./Carticon";
+import FavoriteButton from "./FavoriteButton";
+import Profile from "./Profile";
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,7 +25,7 @@ const Header: React.FC = () => {
   };
 
   return (
-    <header className="border-b border-gray-200 relative">
+    <header className="relative">
       {/* Desktop Header */}
       <Container className="bg-white flex justify-between items-center py-4 px-4 md:px-12">
         <Logo />
@@ -31,45 +35,48 @@ const Header: React.FC = () => {
         </div>
         <div className="hidden md:flex items-center space-x-4 md:space-x-6">
           <button 
-            className="flex flex-col items-center text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer"
+            className="flex flex-col items-center text-[var(--sub-text)] hover:text-[var(--main)] font-bold transition-colors cursor-pointer"
             aria-label="Profile"
           >
-            <User className="w-6 h-6" />
+            <Profile/>
             <span className="text-xs mt-1">Profile</span>
           </button>
           <button 
-            className="flex flex-col items-center text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer"
+            className="flex flex-col items-center text-[var(--sub-text)] hover:text-[var(--main)] font-bold transition-colors cursor-pointer"
             aria-label="Messages"
           >
             <MessageCircle className="w-6 h-6" />
             <span className="text-xs mt-1">Message</span>
           </button>
           <button 
-            className="flex flex-col items-center text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer"
+            className="flex flex-col items-center text-[var(--sub-text)] hover:text-[var(--main)] font-bold transition-colors cursor-pointer"
             aria-label="Orders"
           >
-            <Heart className="w-6 h-6" />
+            <FavoriteButton/>
             <span className="text-xs mt-1">Orders</span>
           </button>
           <button 
-            className="flex flex-col items-center text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer"
+            className="flex flex-col items-center text-[var(--sub-text)] hover:text-[var(--main)] font-bold transition-colors cursor-pointer"
             aria-label="Shopping cart"
           >
-            <ShoppingCart className="w-6 h-6" />
+            <Carticon/>
             <span className="text-xs mt-1">My cart</span>
           </button>
         </div>
         {/* Hamburger Menu Button for Tablet/Mobile */}
         <button
-          className="md:hidden text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer"
+          className="md:hidden text-[var(--sub-text)] hover:text-[var(--main)] font-bold transition-colors cursor-pointer"
           onClick={toggleMenu}
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           aria-expanded={isMenuOpen}
           aria-controls="mobile-menu"
         >
-          {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {isMenuOpen ? <X className="w-6 h-6" /> : <GripVertical className="w-6 h-6" />}
         </button>
       </Container>
+      <div className="">
+      <HeaderMenu/>
+      </div>
 
       {/* Mobile/Tablet Menu */}
       <div
@@ -95,9 +102,10 @@ const Header: React.FC = () => {
         >
           <div className="flex flex-col h-full">
             {/* Close Button */}
-            <div className="flex justify-end p-4 border-b border-gray-200">
+            <div className="flex justify-between p-4 border-b border-gray-200">
+            <Logo/>
               <button
-                className="text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer"
+                className="text-[var(--sub-text)] hover:text-[var(--main)] font-bold transition-colors cursor-pointer"
                 onClick={toggleMenu}
                 aria-label="Close menu"
               >
@@ -115,30 +123,30 @@ const Header: React.FC = () => {
               <nav className="flex flex-col space-y-4">
                 <button 
                   onClick={handleNavItemClick}
-                  className="flex items-center space-x-3 text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer text-base font-medium"
+                  className="flex items-center space-x-3 text-[var(--sub-text)] hover:text-[var(--main)] font-bold transition-colors cursor-pointer text-base font-medium"
                 >
-                  <User className="w-5 h-5" />
+                  <Profile/>
                   <span>Profile</span>
                 </button>
                 <button 
                   onClick={handleNavItemClick}
-                  className="flex items-center space-x-3 text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer text-base font-medium"
+                  className="flex items-center space-x-3 text-[var(--sub-text)] hover:text-[var(--main)] font-bold transition-colors cursor-pointer text-base font-medium"
                 >
                   <MessageCircle className="w-5 h-5" />
                   <span>Message</span>
                 </button>
                 <button 
                   onClick={handleNavItemClick}
-                  className="flex items-center space-x-3 text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer text-base font-medium"
+                  className="flex items-center space-x-3 text-[var(--sub-text)] hover:text-[var(--main)] font-bold transition-colors cursor-pointer text-base font-medium"
                 >
-                  <Heart className="w-5 h-5" />
+                  <FavoriteButton/>
                   <span>Orders</span>
                 </button>
                 <button 
                   onClick={handleNavItemClick}
-                  className="flex items-center space-x-3 text-[var(--sub-text)] hover:text-[var(--main)] transition-colors cursor-pointer text-base font-medium"
+                  className="flex items-center space-x-3 text-[var(--sub-text)] hover:text-[var(--main)] font-bold transition-colors cursor-pointer text-base font-medium"
                 >
-                  <ShoppingCart className="w-5 h-5" />
+                  <Carticon/>
                   <span>My cart</span>
                 </button>
               </nav>
