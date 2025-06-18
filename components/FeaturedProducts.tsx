@@ -3,11 +3,11 @@ import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart, Star } from 'lucide-react';
-import { useCartStore, useFavoriteStore } from '@/lib/store';
+import { useCartStore, useFavoriteStore, Product } from '@/lib/store';
 import toast from 'react-hot-toast';
 
 // Mock data for featured products
-const featuredProducts = [
+const featuredProducts: Product[] = [
   {
     id: '1',
     name: 'Wireless Bluetooth Headphones',
@@ -70,7 +70,7 @@ const FeaturedProducts = () => {
   const addItem = useCartStore((state) => state.addItem);
   const { addFavorite, removeFavorite, isFavorite } = useFavoriteStore();
 
-  const handleAddToCart = (product: any) => {
+  const handleAddToCart = (product: Product) => {
     addItem(product);
     toast.success(`${product.name} added to cart!`);
   };
@@ -139,7 +139,7 @@ const FeaturedProducts = () => {
                     <Star
                       key={i}
                       className={`w-4 h-4 ${
-                        i < Math.floor(product.rating)
+                        i < Math.floor(product.rating || 0)
                           ? 'text-[var(--star)] fill-current'
                           : 'text-gray-300'
                       }`}

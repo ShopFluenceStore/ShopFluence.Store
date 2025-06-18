@@ -5,11 +5,11 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Heart, ShoppingCart, Star, Filter, Search, Grid, List } from 'lucide-react';
-import { useCartStore, useFavoriteStore } from '@/lib/store';
+import { useCartStore, useFavoriteStore, Product } from '@/lib/store';
 import toast from 'react-hot-toast';
 
 // Mock products data
-const allProducts = [
+const allProducts: Product[] = [
   {
     id: '1',
     name: 'Wireless Bluetooth Headphones',
@@ -114,7 +114,7 @@ const ShopPage = () => {
   const addItem = useCartStore((state) => state.addItem);
   const { addFavorite, removeFavorite, isFavorite } = useFavoriteStore();
 
-  const handleAddToCart = (product: any) => {
+  const handleAddToCart = (product: Product) => {
     addItem(product);
     toast.success(`${product.name} added to cart!`);
   };
@@ -146,7 +146,7 @@ const ShopPage = () => {
         case 'price-high':
           return b.price - a.price;
         case 'rating':
-          return b.rating - a.rating;
+          return (b.rating || 0) - (a.rating || 0);
         default:
           return a.name.localeCompare(b.name);
       }
@@ -334,7 +334,7 @@ const ShopPage = () => {
                             <Star
                               key={i}
                               className={`w-4 h-4 ${
-                                i < Math.floor(product.rating)
+                                i < Math.floor(product.rating || 0)
                                   ? 'text-[var(--star)] fill-current'
                                   : 'text-gray-300'
                               }`}

@@ -4,12 +4,12 @@ import Container from '@/components/Container';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Heart, ShoppingCart, Star, ArrowLeft } from 'lucide-react';
-import { useCartStore, useFavoriteStore } from '@/lib/store';
+import { useCartStore, useFavoriteStore, Product } from '@/lib/store';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 
 // Mock products data (in a real app, this would come from your database)
-const allProducts = [
+const allProducts: Product[] = [
   {
     id: '1',
     name: 'Wireless Bluetooth Headphones',
@@ -75,7 +75,7 @@ const FavoritesPage = () => {
   // Get favorite products
   const favoriteProducts = allProducts.filter(product => favorites.includes(product.id));
 
-  const handleAddToCart = (product: any) => {
+  const handleAddToCart = (product: Product) => {
     addItem(product);
     toast.success(`${product.name} added to cart!`);
   };
@@ -176,7 +176,7 @@ const FavoritesPage = () => {
                       <Star
                         key={i}
                         className={`w-4 h-4 ${
-                          i < Math.floor(product.rating)
+                          i < Math.floor(product.rating || 0)
                             ? 'text-[var(--star)] fill-current'
                             : 'text-gray-300'
                         }`}

@@ -4,9 +4,11 @@ import Container from '@/components/Container';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, Package, Home } from 'lucide-react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 const OrderSuccessPage = () => {
-  const orderNumber = `ORD-${Date.now().toString().slice(-6)}`;
+  const searchParams = useSearchParams();
+  const orderNumber = searchParams.get('order') || `ORD-${Date.now().toString().slice(-6)}`;
 
   return (
     <div className="min-h-screen bg-[var(--bg)]">

@@ -5,8 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useCartStore } from '@/lib/store';
-import { useUser } from '@clerk/nextjs';
+import { useCartStore, useUserStore } from '@/lib/store';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { CreditCard, Lock, ArrowLeft } from 'lucide-react';
@@ -14,15 +13,15 @@ import Link from 'next/link';
 
 const CheckoutPage = () => {
   const { items, getTotalPrice, clearCart } = useCartStore();
-  const { user, isSignedIn } = useUser();
+  const { user, isLoggedIn } = useUserStore();
   const router = useRouter();
   
   const [isProcessing, setIsProcessing] = useState(false);
   const [formData, setFormData] = useState({
-    email: user?.primaryEmailAddress?.emailAddress || '',
-    firstName: user?.firstName || '',
-    lastName: user?.lastName || '',
-    address: '',
+    email: user?.email || '',
+    firstName: user?.name?.split(' ')[0] || '',
+    lastName: user?.name?.split(' ')[1] || '',
+    address: user?.address || '',
     city: '',
     state: '',
     zipCode: '',
@@ -34,16 +33,11 @@ const CheckoutPage = () => {
   });
 
   React.useEffect(() => {
-    if (!isSignedIn) {
-      router.push('/sign-in?redirect_url=/checkout');
-      return;
-    }
-    
     if (items.length === 0) {
       router.push('/cart');
       return;
     }
-  }, [isSignedIn, items.length, router]);
+  }, [items.length, router]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -55,15 +49,45 @@ const CheckoutPage = () => {
     setIsProcessing(true);
 
     try {
-      // Simulate payment processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Generate order number
+      const orderNumber = `ORD-${Date.now().toString().slice(-6)}`;
       
-      // Clear cart and redirect to success page
-      clearCart();
-      toast.success('Order placed successfully!');
-      router.push('/order-success');
+      // Prepare order data for email
+      const orderData = {
+        customerName: `${formData.firstName} ${formData.lastName}`,
+        customerEmail: formData.email,
+        orderNumber,
+        items: items.map(item => ({
+          name: item.product?.name || '',
+          quantity: item.quantity,
+          price: item.product?.price || 0
+        })),
+        total: subtotal + shipping + tax,
+        shippingAddress: `${formData.firstName} ${formData.lastName}\n${formData.address}\n${formData.city}, ${formData.state} ${formData.zipCode}\n${formData.country}`
+      };
+
+      // Send order confirmation email
+      const response = await fetch('/api/send-order-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      if (response.ok) {
+        // Clear cart and redirect to success page
+        clearCart();
+        toast.success('Order placed successfully! Check your email for confirmation.');
+        router.push(`/order-success?order=${orderNumber}`);
+      } else {
+        toast.error('Order placed but email confirmation failed. Please contact support.');
+        clearCart();
+        router.push(`/order-success?order=${orderNumber}`);
+      }
     } catch (error) {
-      toast.error('Payment failed. Please try again.');
+      console.error('Checkout error:', error);
+      toast.error('There was an issue processing your order. Please try again.');
     } finally {
       setIsProcessing(false);
     }
@@ -74,7 +98,7 @@ const CheckoutPage = () => {
   const tax = subtotal * 0.08;
   const total = subtotal + shipping + tax;
 
-  if (!isSignedIn || items.length === 0) {
+  if (items.length === 0) {
     return null; // Will redirect
   }
 
@@ -113,7 +137,6 @@ const CheckoutPage = () => {
                       value={formData.email}
                       onChange={handleInputChange}
                       required
-                      disabled
                     />
                   </div>
                 </div>

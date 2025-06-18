@@ -5,14 +5,13 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft } from 'lucide-react';
-import { useCartStore } from '@/lib/store';
+import { useCartStore, useUserStore } from '@/lib/store';
 import Link from 'next/link';
-import { useUser } from '@clerk/nextjs';
 import toast from 'react-hot-toast';
 
 const CartPage = () => {
   const { items, updateQuantity, removeItem, clearCart, getTotalPrice } = useCartStore();
-  const { isSignedIn } = useUser();
+  const { isLoggedIn } = useUserStore();
 
   const handleQuantityChange = (productId: string, newQuantity: number) => {
     if (newQuantity < 1) return;
@@ -25,11 +24,7 @@ const CartPage = () => {
   };
 
   const handleCheckout = () => {
-    if (!isSignedIn) {
-      toast.error('Please sign in to proceed to checkout');
-      return;
-    }
-    // Redirect to checkout page
+    // Allow checkout without login requirement
     window.location.href = '/checkout';
   };
 
@@ -212,7 +207,7 @@ const CartPage = () => {
               </Button>
 
               <p className="text-xs text-[var(--sub-text)] text-center mt-4">
-                Secure checkout powered by Stripe
+                Secure checkout with email confirmation
               </p>
             </Card>
           </div>

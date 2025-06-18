@@ -1,6 +1,28 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { Product, CartItem } from './supabase'
+
+export interface Product {
+  id: string
+  name: string
+  description: string
+  price: number
+  image_url: string
+  category: string
+  stock: number
+  featured: boolean
+  created_at: string
+  updated_at: string
+  rating?: number
+  reviews?: number
+}
+
+export interface CartItem {
+  id: string
+  product_id: string
+  quantity: number
+  created_at: string
+  product?: Product
+}
 
 interface CartStore {
   items: CartItem[]
@@ -31,7 +53,6 @@ export const useCartStore = create<CartStore>()(
         } else {
           const newItem: CartItem = {
             id: Math.random().toString(36).substr(2, 9),
-            user_id: '',
             product_id: product.id,
             quantity,
             created_at: new Date().toISOString(),
@@ -104,6 +125,32 @@ export const useFavoriteStore = create<FavoriteStore>()(
     }),
     {
       name: 'favorites-storage'
+    }
+  )
+)
+
+interface UserStore {
+  user: {
+    name: string
+    email: string
+    phone?: string
+    address?: string
+  } | null
+  setUser: (user: { name: string; email: string; phone?: string; address?: string }) => void
+  clearUser: () => void
+  isLoggedIn: () => boolean
+}
+
+export const useUserStore = create<UserStore>()(
+  persist(
+    (set, get) => ({
+      user: null,
+      setUser: (user) => set({ user }),
+      clearUser: () => set({ user: null }),
+      isLoggedIn: () => get().user !== null
+    }),
+    {
+      name: 'user-storage'
     }
   )
 )
